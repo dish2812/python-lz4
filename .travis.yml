@@ -30,91 +30,17 @@ matrix:
       language: python
       python: 3.8
       arch: arm64
-      dist: xenial
+      dist: bionic
       sudo: required
       env:
         - TOXENV=py38 
         - BUILD_SDIST=true
         - BUILD_WHEEL=true
-    - name: osx-py35
-      os: osx
-      language: generic
-      env:
-        - CIBW_BUILD=cp35-*
-        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
-        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
-      install:
-        - python -m pip install cibuildwheel==1.1.0
-        - python -m pip install twine
-      script:
-        - |
-          if [ "${USE_WHEEL}" == "1" ]; then
-              # Run setup.py build before pip wheel, to build in current directory
-              # and make more efficient use of ccache
-              echo "setup.py build"
-              python tools/suppress_output.py python setup.py build
-              echo "pip wheel"
-              python tools/suppress_output.py pip wheel --no-build-isolation .
-              pip install --no-cache-dir lz4*.whl
-              USE_WHEEL_BUILD="--no-build"
-          elif [ "${USE_SDIST}" == "1" ]; then
-              echo "setup.py sdist"
-              python tools/suppress_output.py python setup.py sdist
-              # Move out of source directory to avoid finding local scipy
-              cd dist
-              echo "pip install"
-              # Note: uses build isolation, which is what pip does with sdists by default
-              # Note: don't use a fixed build dir (which would help for ccache), because
-              #       --build is partially broken and the workaround in commit b4617dd764
-              #       messes with build isolation.
-              pip install $PWD/lz4* -v
-              cd ..
-              USE_WHEEL_BUILD="--no-build"
-          fi
-        - cibuildwheel --output-dir dist
-    - name: osx-py36
-      os: osx
-      language: generic
-      env:
-        - CIBW_BUILD=cp36-*
-        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
-        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
-      install:
-        - python -m pip install cibuildwheel==1.1.0
-        - python -m pip install twine
-      script:
-        - cibuildwheel --output-dir dist
-    - name: osx-py37
-      os: osx
-      language: generic
-      env:
-        - CIBW_BUILD=cp37-*
-        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
-        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
-      install:
-        - python -m pip install cibuildwheel==1.1.0
-        - python -m pip install twine
-      script:
-        - cibuildwheel --output-dir dist
-    - name: osx-py38
-      os: osx
-      language: generic
-      env:
-        - CIBW_BUILD=cp38-*
-        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
-        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
-      install:
-        - python -m pip install cibuildwheel==1.1.0
-        - python -m pip install twine
-      script:
-        - cibuildwheel --output-dir dist
 install:
   - python -m pip install -U pip
   - python -m pip install cibuildwheel==1.1.0
   - python -m pip install codecov tox twine
 script:
-  - tox tests
-  - codecov
   - if [ "$BUILD_WHEEL" == "true" ]; then 
       cibuildwheel --output-dir dist ;
       python setup.py sdist;
