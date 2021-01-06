@@ -32,6 +32,8 @@ matrix:
       arch: arm64
       dist: bionic
       sudo: required
+      services:
+        - docker
       env:
         - TOXENV=py38 
         - BUILD_SDIST=true
