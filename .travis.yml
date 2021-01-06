@@ -2,6 +2,7 @@ matrix:
   include:
     - name: linux-py35
       language: python
+      arch: arm64
       python: 3.5
       sudo: required
       services:
@@ -27,6 +28,7 @@ matrix:
         - CIBW_BUILD=cp37-*
     - name: linux-py38
       language: python
+      arch: arm64
       python: 3.8
       dist: xenial
       sudo: required
