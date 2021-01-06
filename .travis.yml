@@ -113,8 +113,7 @@ install:
 script:
   - tox tests
   - codecov
-  - git stash --all # Restore fresh checkout
-  - cibuildwheel --output-dir dist
+  - python setup.py bdist_wheel
 deploy:
   - provider: pypi
     # server: https://test.pypi.org/legacy/
