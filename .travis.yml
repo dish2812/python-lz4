@@ -29,10 +29,8 @@ matrix:
     - name: linux-py38
       language: python
       python: 3.8
-      dist: focal
-      arch: arm64-graviton2
-      virt: lxd
-      group: edge
+      arch: arm64
+      dist: xenial
       sudo: required
       env:
         - TOXENV=py38 
