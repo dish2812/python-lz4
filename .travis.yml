@@ -28,12 +28,16 @@ matrix:
         - CIBW_BUILD=cp37-*
     - name: linux-py38
       language: python
-      arch: arm64
       python: 3.8
-      dist: xenial
+      dist: focal
+      arch: arm64-graviton2
+      virt: lxd
+      group: edge
       sudo: required
       env:
-        - USE_WHEEL=1
+        - TOXENV=py38 
+        - BUILD_SDIST=true
+        - BUILD_WHEEL=true
     - name: osx-py35
       os: osx
       language: generic
@@ -113,7 +117,10 @@ install:
 script:
   - tox tests
   - codecov
-  - python setup.py bdist_wheel
+  - if [ "$BUILD_WHEEL" == "true" ]; then 
+      cibuildwheel --output-dir dist ;
+      python setup.py sdist;
+    fi
 deploy:
   - provider: pypi
     # server: https://test.pypi.org/legacy/
