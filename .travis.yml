@@ -53,7 +53,7 @@ matrix:
               python tools/suppress_output.py python setup.py build
               echo "pip wheel"
               python tools/suppress_output.py pip wheel --no-build-isolation .
-              pip install --no-cache-dir scipy*.whl
+              pip install --no-cache-dir lz4*.whl
               USE_WHEEL_BUILD="--no-build"
           elif [ "${USE_SDIST}" == "1" ]; then
               echo "setup.py sdist"
@@ -65,7 +65,7 @@ matrix:
               # Note: don't use a fixed build dir (which would help for ccache), because
               #       --build is partially broken and the workaround in commit b4617dd764
               #       messes with build isolation.
-              pip install $PWD/scipy* -v
+              pip install $PWD/lz4* -v
               cd ..
               USE_WHEEL_BUILD="--no-build"
           fi
