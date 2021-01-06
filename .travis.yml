@@ -35,7 +35,7 @@ matrix:
       services:
         - docker
       env:
-        - CIBW_BUILD=cp38-*
+        - USE_WHEEL=1
     - name: osx-py35
       os: osx
       language: generic
@@ -91,6 +91,30 @@ install:
 script:
   - tox tests
   - codecov
+  - |
+    if [ "${USE_WHEEL}" == "1" ]; then
+        # Run setup.py build before pip wheel, to build in current directory
+        # and make more efficient use of ccache
+        echo "setup.py build"
+        python tools/suppress_output.py python setup.py build
+        echo "pip wheel"
+        python tools/suppress_output.py pip wheel --no-build-isolation .
+        pip install --no-cache-dir lz4*.whl
+        USE_WHEEL_BUILD="--no-build"
+    elif [ "${USE_SDIST}" == "1" ]; then
+        echo "setup.py sdist"
+        python tools/suppress_output.py python setup.py sdist
+        # Move out of source directory to avoid finding local scipy
+        cd dist
+        echo "pip install"
+        # Note: uses build isolation, which is what pip does with sdists by default
+        # Note: don't use a fixed build dir (which would help for ccache), because
+        #       --build is partially broken and the workaround in commit b4617dd764
+        #       messes with build isolation.
+        pip install $PWD/lz4* -v
+        cd ..
+        USE_WHEEL_BUILD="--no-build"
+    fi
   - git stash --all # Restore fresh checkout
   - cibuildwheel --output-dir dist
 deploy:
