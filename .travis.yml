@@ -2,7 +2,6 @@ matrix:
   include:
     - name: linux-py35
       language: python
-      arch: arm64
       python: 3.5
       sudo: required
       services:
@@ -26,27 +25,96 @@ matrix:
         - docker
       env:
         - CIBW_BUILD=cp37-*
-    - name: linux-py38
-      language: python
-      python: 3.8
+    - name: linux-py37
       arch: arm64
-      dist: bionic
+      language: python
+      python: 3.7
+      dist: xenial
       sudo: required
       services:
         - docker
       env:
-        - TOXENV=py38 
-        - BUILD_SDIST=true
-        - BUILD_WHEEL=true
+        - PIP_NO_CACHE_DIR=off
+        - CIBW_BUILD=cp37-manylinux_aarch64
+    - name: linux-py38
+      language: python
+      python: 3.8
+      dist: xenial
+      sudo: required
+      services:
+        - docker
+      env:
+        - CIBW_BUILD=cp38-*
+    - name: linux-py38
+      arch: arm64
+      language: python
+      python: 3.8
+      dist: xenial
+      sudo: required
+      services:
+        - docker
+      env:
+        - PIP_NO_CACHE_DIR=off
+        - CIBW_BUILD=cp38-manylinux_aarch64
+    - name: osx-py35
+      os: osx
+      language: generic
+      env:
+        - CIBW_BUILD=cp35-*
+        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
+        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
+      install:
+        - python -m pip install cibuildwheel==1.1.0
+        - python -m pip install twine
+      script:
+        - cibuildwheel --output-dir dist
+    - name: osx-py36
+      os: osx
+      language: generic
+      env:
+        - CIBW_BUILD=cp36-*
+        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
+        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
+      install:
+        - python -m pip install cibuildwheel==1.1.0
+        - python -m pip install twine
+      script:
+        - cibuildwheel --output-dir dist
+    - name: osx-py37
+      os: osx
+      language: generic
+      env:
+        - CIBW_BUILD=cp37-*
+        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
+        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
+      install:
+        - python -m pip install cibuildwheel==1.1.0
+        - python -m pip install twine
+      script:
+        - cibuildwheel --output-dir dist
+    - name: osx-py38
+      os: osx
+      language: generic
+      env:
+        - CIBW_BUILD=cp38-*
+        - CIBW_TEST_COMMAND="pushd {project}; tox tests ; popd"
+        - CIBW_BEFORE_BUILD="python -m pip install -U pip; python -m pip install tox twine"
+      install:
+        - python -m pip install cibuildwheel==1.1.0
+        - python -m pip install twine
+      script:
+        - cibuildwheel --output-dir dist
 install:
   - python -m pip install -U pip
   - python -m pip install cibuildwheel==1.1.0
   - python -m pip install codecov tox twine
 script:
-  - if [ "$BUILD_WHEEL" == "true" ]; then 
-      cibuildwheel --output-dir dist ;
-      python setup.py sdist;
-    fi
+  - tox tests || travis_terminate $?
+  - codecov
+  - git config --global user.email "junk@junk.com"
+  - git config --global user.name "junk"
+  - git stash --all # Restore fresh checkout
+  - cibuildwheel --output-dir dist
 deploy:
   - provider: pypi
     # server: https://test.pypi.org/legacy/
