@@ -49,13 +49,13 @@ matrix:
       arch: arm64
       language: python
       python: 3.8
-      dist: xenial
-      sudo: required
-      services:
-        - docker
       env:
+        - TOXENV=py38
         - PIP_NO_CACHE_DIR=off
-        - CIBW_BUILD=cp38-manylinux_aarch64
+      dist: focal
+      arch: arm64-graviton2
+      virt: lxd
+      group: edge
     - name: osx-py35
       os: osx
       language: generic
