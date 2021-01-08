@@ -46,7 +46,6 @@ matrix:
       env:
         - CIBW_BUILD=cp38-*
     - name: linux-py38
-      arch: arm64
       language: python
       python: 3.8
       env:
