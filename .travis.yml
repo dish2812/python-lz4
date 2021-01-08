@@ -51,10 +51,10 @@ matrix:
       env:
         - CIBW_BUILD=cp38-manylinux_aarch64
         - PIP_NO_CACHE_DIR=off
-      dist: focal
-      arch: arm64-graviton2
-      virt: lxd
-      group: edge
+      dist: bionic
+      arch: arm64
+      #virt: lxd
+      #group: edge
     - name: osx-py35
       os: osx
       language: generic
