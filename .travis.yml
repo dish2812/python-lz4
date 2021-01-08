@@ -49,9 +49,7 @@ matrix:
       language: python
       python: 3.8
       env: 
-      - TOXENV=py38 
       - CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
-      - BUILD_SDIST=true
       - BUILD_WHEEL=true
       dist: focal
       arch: arm64-graviton2
