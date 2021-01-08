@@ -48,13 +48,24 @@ matrix:
     - name: linux-py38
       language: python
       python: 3.8
-      env:
-        - CIBW_BUILD=cp38-manylinux_aarch64
-        - PIP_NO_CACHE_DIR=off
-      dist: bionic
-      arch: arm64
-      #virt: lxd
-      #group: edge
+      env: 
+      - TOXENV=py38 
+      - SODIUM_INSTALL=bundled
+      - BUILD_SDIST=true
+      - BUILD_WHEEL=true
+      dist: focal
+      arch: arm64-graviton2
+      virt: lxd
+      group: edge
+      install:
+        - python -m pip install -U pip
+        - python -m pip install cibuildwheel==1.1.0
+        - python -m pip install twine
+      script:
+      - if [ "$BUILD_WHEEL" == "true" ]; then 
+          cibuildwheel --output-dir dist ;
+          python setup.py sdist;
+        fi
     - name: osx-py35
       os: osx
       language: generic
@@ -107,13 +118,13 @@ install:
   - python -m pip install -U pip
   - python -m pip install cibuildwheel==1.1.0
   - python -m pip install codecov tox twine
-script:
-  - tox tests
-  - codecov
-  - git config --global user.email "junk@junk.com"
-  - git config --global user.name "junk"
-  - git stash --all # Restore fresh checkout
-  - cibuildwheel --output-dir dist
+#script:
+  #- tox tests
+  #- codecov
+  #- git config --global user.email "junk@junk.com"
+  #- git config --global user.name "junk"
+  #- git stash --all # Restore fresh checkout
+  #- cibuildwheel --output-dir dist
 deploy:
   - provider: pypi
     # server: https://test.pypi.org/legacy/
