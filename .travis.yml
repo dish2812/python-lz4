@@ -113,7 +113,7 @@ install:
   - python -m pip install cibuildwheel==1.7.4
   - python -m pip install codecov tox twine
 script:
-  - tox tests || travis_terminate $?
+  - tox tests
   - codecov
   - git config --global user.email "junk@junk.com"
   - git config --global user.name "junk"
