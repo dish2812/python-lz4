@@ -48,10 +48,8 @@ matrix:
       env:
         - CIBW_BUILD=cp38-*
     - name: linux-py38
-      arch: arm64-graviton
+      arch: arm64
       dist: focal
-      virt: lxd
-      group: edge
       language: python
       python: 3.8
       sudo: required
